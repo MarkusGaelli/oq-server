@@ -13,3 +13,6 @@ RUN groupadd -g 1234 openqwaq && \
 
 RUN adduser openqwaq sudo
 
+USER openqwaq
+WORKDIR /home
+RUN git clone https://github.com/OpenFora/openqwaq.git
