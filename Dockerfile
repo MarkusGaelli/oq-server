@@ -17,12 +17,14 @@ RUN adduser openqwaq sudo
 WORKDIR /home
 RUN rm -rf openqwaq
 RUN git clone https://github.com/OpenFora/openqwaq.git
-RUN ln -s /home/openqwaq/server/etc/OpenQwaq-http.conf /etc/apache2/conf.d
+RUN ln -s /home/openqwaq/server/etc/OpenQwaq-http.conf /etc/apache2/sites-available/OpenQwaq-http.conf
 RUN sed -i 's/www-data/openqwaq/g' /etc/apache2/envvars 
 RUN chown -R openqwaq:openqwaq /home/openqwaq
 RUN chmod 750 /home/openqwaq
 RUN a2enmod proxy && a2enmod proxy_http && a2enmod rewrite && \
-    a2enmod auth_digest && service apache2 restart
+    a2enmod auth_digest 
+RUN a2ensite OpenQwaq-http 
+RUN service apache2 restart
 
 #Database setup
 WORKDIR /home/openqwaq/server/conf
@@ -38,4 +40,22 @@ RUN service mysql start && \
     isql OpenQwaqActivityLog openqwaq openqwaq -b < ./OpenQwaqActivityLog.sql && \
     isql OpenQwaqData openqwaq openqwaq -b < ./default-servers.sql && \
     isql OpenQwaqData openqwaq openqwaq -b < ./default-visitor.sql
+RUN cp /home/openqwaq/server/conf/server.conf.in /home/openqwaq/server/conf/server.conf
+RUN mkdir /home/openqwaq/realms && \
+    cp /home/openqwaq/server/etc/forums.properties /home/openqwaq/realms/ && \
+    ln -s /home/openqwaq/server/system-resources/ /home/openqwaq/realms/ && \
+    ln -s /home/openqwaq/server/etc/OpenQwaq /etc/init.d/ && \
+    ln -s /home/openqwaq/server/etc/OpenQwaq-iptables /etc/init.d/ && \
+    ln -s /home/openqwaq/server/etc/OpenQwaq-tunnel /etc/init.d/
+RUN sed -i 's=/etc/init.d/init-functions=/lib/lsb/init-functions=g' /home/openqwaq/server/etc/OpenQwaq && \
+    sed -i 's=/etc/init.d/init-functions=/lib/lsb/init-functions=g' /home/openqwaq/server/etc/OpenQwaq-iptables && \
+    sed -i 's=/etc/init.d/init-functions=/lib/lsb/init-functions=g' /home/openqwaq/server/etc/OpenQwaq-tunnel
+RUN a2dissite 000-default
+WORKDIR /home/openqwaq/server/etc
+RUN chmod 775 OpenQwaq && \
+    chmod 775 OpenQwaq-iptables && \
+    chmod 775 OpenQwaq-tunnel && \
+    chmod 775 /home/openqwaq/server/foreign-client-proxy/LaunchProxy && \
+    chown -R openqwaq:openqwaq /home/openqwaq
+RUN service OpenQwaq start
 
