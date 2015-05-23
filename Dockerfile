@@ -13,10 +13,10 @@ RUN groupadd -g 1234 openqwaq && \
 
 RUN adduser openqwaq sudo
 
-USER openqwaq
+#USER openqwaq
 WORKDIR /home
-RUN sudo rm -rf openqwaq
+RUN rm -rf openqwaq
 RUN git clone https://github.com/OpenFora/openqwaq.git
-RUN sudo ln -s /home/openqwaq/server/etc/OpenQwaq-http.conf /etc/apache2/conf.d
-RUN sudo sed -i 's/www-data/openqwaq/g' /etc/apache2/envars 
+RUN ln -s /home/openqwaq/server/etc/OpenQwaq-http.conf /etc/apache2/conf.d
+RUN sed -i 's/www-data/openqwaq/g' /etc/apache2/envars 
 
