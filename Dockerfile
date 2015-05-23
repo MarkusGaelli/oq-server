@@ -24,3 +24,18 @@ RUN chmod 750 /home/openqwaq
 RUN a2enmod proxy && a2enmod proxy_http && a2enmod rewrite && \
     a2enmod auth_digest && service apache2 restart
 
+#Database setup
+WORKDIR /home/openqwaq/server/conf
+RUN ln -s /usr/lib/x86_64-linux-gnu/odbc/libmyodbc.so /usr/lib/libmyodbc.so
+RUN service mysql start && \
+    /usr/bin/mysqladmin -u root password openqwaq && \
+    /usr/bin/mysql -uroot -popenqwaq -b < ./mysqlinit.sql
+RUN odbcinst -i -s -l -f ./OpenQwaqData.dsn.in && \
+    odbcinst -i -s -l -f ./OpenQwaqActivityLog.dsn.in && \
+    cp ../etc/OpenQwaq-odbcinst.ini /etc/odbcinst.ini
+RUN service mysql start && \
+    isql OpenQwaqData openqwaq openqwaq -b < ./OpenQwaqData.sql && \
+    isql OpenQwaqActivityLog openqwaq openqwaq -b < ./OpenQwaqActivityLog.sql && \
+    isql OpenQwaqData openqwaq openqwaq -b < ./default-servers.sql && \
+    isql OpenQwaqData openqwaq openqwaq -b < ./default-visitor.sql
+
