@@ -18,7 +18,7 @@ WORKDIR /home
 RUN rm -rf openqwaq
 RUN git clone https://github.com/OpenFora/openqwaq.git
 RUN ln -s /home/openqwaq/server/etc/OpenQwaq-http.conf /etc/apache2/conf.d
-RUN sed -i 's/www-data/openqwaq/g' /etc/apache2/envars 
+RUN sed -i 's/www-data/openqwaq/g' /etc/apache2/envvars 
 RUN chown -R openqwaq:openqwaq /home/openqwaq
 RUN chmod 750 /home/openqwaq
 RUN a2enmod proxy && a2enmod proxy_http && a2enmod rewrite && \
