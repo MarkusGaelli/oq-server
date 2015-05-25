@@ -1,4 +1,4 @@
-FROM pshouse/squeak-base
+FROM ggrandes/ubuntu32:14.04 
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -6,8 +6,7 @@ RUN apt-get update && \
     apt-get install -yqq apache2 php5 php-auth php5-mysql php5-odbc && \
     apt-get install -yqq gcc daemon git mysql-server libmyodbc && \
     apt-get install -yqq unixodbc unixodbc-dev stunnel4 && \
-    apt-get install -yqq libc6:i386 libpng12-0:i386 iptables &&\
-    apt-get install -yqq libmyodbc:i386
+    apt-get install -yqq iptables 
 
 RUN groupadd -g 1234 openqwaq && \
     useradd -g 1234 -G 1234 -u 1234 -c "OpenQwaq service user" -d /home/openqwaq -m -s /bin/bash openqwaq && \
@@ -30,7 +29,7 @@ RUN service apache2 restart
 
 #Database setup
 WORKDIR /home/openqwaq/server/conf
-RUN ln -s /usr/lib/x86_64-linux-gnu/odbc/libmyodbc.so /usr/lib/libmyodbc.so
+RUN ln -s /usr/lib/i386-linux-gnu/odbc/libmyodbc.so /usr/lib/libmyodbc.so
 
 RUN service mysql start && \
     /usr/bin/mysqladmin -u root password openqwaq && \
@@ -60,5 +59,5 @@ RUN chmod 775 OpenQwaq && \
     chmod 775 OpenQwaq-tunnel && \
     chmod 775 /home/openqwaq/server/foreign-client-proxy/LaunchProxy && \
     chown -R openqwaq:openqwaq /home/openqwaq
-RUN service OpenQwaq start
+#RUN service OpenQwaq start
 
