@@ -6,7 +6,8 @@ RUN apt-get update && \
     apt-get install -yqq apache2 php5 php-auth php5-mysql php5-odbc && \
     apt-get install -yqq gcc daemon git mysql-server libmyodbc && \
     apt-get install -yqq unixodbc unixodbc-dev stunnel4 && \
-    apt-get install -yqq libc6:i386 libpng12-0:i386
+    apt-get install -yqq libc6:i386 libpng12-0:i386 iptables &&\
+    apt-get install -yqq libmyodbc:i386
 
 RUN groupadd -g 1234 openqwaq && \
     useradd -g 1234 -G 1234 -u 1234 -c "OpenQwaq service user" -d /home/openqwaq -m -s /bin/bash openqwaq && \
@@ -30,6 +31,7 @@ RUN service apache2 restart
 #Database setup
 WORKDIR /home/openqwaq/server/conf
 RUN ln -s /usr/lib/x86_64-linux-gnu/odbc/libmyodbc.so /usr/lib/libmyodbc.so
+
 RUN service mysql start && \
     /usr/bin/mysqladmin -u root password openqwaq && \
     /usr/bin/mysql -uroot -popenqwaq -b < ./mysqlinit.sql
