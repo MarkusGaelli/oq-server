@@ -60,6 +60,7 @@ RUN chmod 775 OpenQwaq && \
     chmod 775 /home/openqwaq/server/foreign-client-proxy/LaunchProxy && \
     chown -R openqwaq:openqwaq /home/openqwaq
 RUN apt-get install gpac libgpac-dev && ln -s /usr/bin/MP4Box /usr/local/bin/MP4Box
+RUN cp ld.so.conf.d/OpenQwaq-mp4box.conf /etc/ld.so.conf.d
 #RUN apt-get install zlib1g-dev make
 #RUN ../third-party/src/GPAC/run_me_build_mp4box.sh
 #RUN service OpenQwaq start
